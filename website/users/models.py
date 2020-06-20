@@ -11,7 +11,8 @@ class SideEffect(models.Model):
 class Medication(models.Model):
 
     name = models.CharField(max_length=200, null=True)
-    sideeffects = models.ManyToManyField(SideEffect)
+    treatment_for = models.CharField(max_length=200, null=True)
+    side_effects = models.ManyToManyField(SideEffect)
 
     def __str__(self):
         return self.name

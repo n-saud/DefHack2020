@@ -1,17 +1,60 @@
 {% extends 'users/main.html' %}
 
 {% block content %}
-
+{% include 'users/status.html' %}
 <br>
 
-		<div class="row">
-			<div class="col-md">
-				<div class="card card-body">
-					<h5>Dashboard</h5>
-				</div>
-
-			</div>
-
+<div class="row">
+	<div class="col-md-6">
+		<h5>MEDICATIONS:</h5>
+		<hr>
+		<div class="card card-body">
+			<a class="btn btn-primary  btn-sm btn-block" href="">Add Medications</a>
+			<table class="table table-sm">
+				<tr>
+					<th>Medication</th>
+					<th>Treatment</th>
+					<th>Side Effects</th>
+					<th>Update</th>
+					<th>Remove</th>
+				</tr>
+				{% for i in medications%}
+				<tr>
+					<td>{{i.name}}</td>
+					<td>{{i.treatment_for}}</td>
+					<td>{{i.side_effects}}</td>
+					<td><a class = "btn btn-sm btn-info" href="">Update</a></td>
+					<td><a class = "btn btn-sm btn-danger" href="">Remove</a></td>
+				</tr>
+				{% endfor%}
+			</table>
 		</div>
+	</div>
+
+	<div class="col-md-6">
+		<h5>LAST 5 LOGS</h5>
+		<hr>
+		<div class="card card-body">
+			<a class="btn btn-primary  btn-sm btn-block" href="">Create Log</a>
+			<table class="table table-sm">
+				<tr>
+					<th>Date</th>
+					<th>Side Effect</th>
+					<th>Severity</th>
+					<th>Duration (Hrs)</th>
+				</tr>
+				{% for i in logs%}
+				<tr>
+					<td>{{i.date_created}}</td>
+					<td>{{i.side_effect}}</td>
+					<td>{{i.severity}}</td>
+					<td>{{i.durarion_in_hours}}</td>
+				</tr>
+				{% endfor%}
+			</table>
+		</div>
+	</div>
+
+</div>
 
 {% endblock %}

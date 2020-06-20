@@ -1,16 +1,19 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from django.forms import inlineformset_factory
-from django.contrib.auth.forms import UserCreationForm
 
-from django.contrib.auth import authenticate, login, logout
-
-from django.contrib import messages
-
-from django.contrib.auth.decorators import login_required
+from.models import *
 
 def home(request):
-    return render(request, 'users/dashboard.html')
+    medications = Medication.objects.all() #change later
+    medications_count = medications.count()
+    side_effects_count =0
+    for med in medications:
+        side_effects_count = side_effects_count + med.side_effects.count()
+    logs = Log.objects.all() #change later
+    logs_count = Log.objects.all().count() #change later
+    context = {'medications_count': medications_count, 'side_effects_count': side_effects_count,
+    'logs_count': logs_count, 'medications': medications, 'logs': logs}
+    return render(request, 'users/dashboard.html',context)
 
 def register(request):
     form = UserCreationForm();
@@ -20,8 +23,10 @@ def login(request):
     context = {}
     return render(request, 'users/login.html')
 def logs(request):
-    return render(request, 'users/logs.html')
+    logs = Log.objects.all() #change later
+    return render(request, 'users/logs.html',{'logs':logs})
 def medications(request):
-    return render(request, 'users/medications.html')
+    medications = Medication.objects.all() #change later
+    return render(request, 'users/medications.html',{'medications':medications})
 def data(request):
     return render(request, 'users/data.html')
