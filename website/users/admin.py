@@ -4,3 +4,4 @@ from .models import *
 admin.site.register(Customer)
 admin.site.register(SideEffect)
 admin.site.register(Medication)
+admin.site.register(Log)

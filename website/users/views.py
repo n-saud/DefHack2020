@@ -19,3 +19,9 @@ def register(request):
 def login(request):
     context = {}
     return render(request, 'users/login.html')
+def logs(request):
+    return render(request, 'users/logs.html')
+def medications(request):
+    return render(request, 'users/medications.html')
+def data(request):
+    return render(request, 'users/data.html')

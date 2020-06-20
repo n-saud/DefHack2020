@@ -25,3 +25,16 @@ class Customer(models.Model):
 
     def __str__(self):
         return self.name
+class Log(models.Model):
+    SEVERITY = (
+        ('Mild', 'Mild'),
+        ('Moderate', 'Moderate'),
+        ('Severe', 'Severe'),
+        ('Very Severe', 'Very Severe'),
+        ('Worst Pain Possible', 'Worst Pain Possible')
+    )
+    customer = models.ForeignKey(Customer, null = True, on_delete=models.SET_NULL)
+    side_effect = models.ForeignKey(SideEffect, null = True, on_delete=models.SET_NULL)
+    date_created = models.DateTimeField(auto_now_add=True, null=True)
+    severity = models.CharField(max_length=200, choices = SEVERITY)
+    durarion_in_hours = models.FloatField(null=True)
