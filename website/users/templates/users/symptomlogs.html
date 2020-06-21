@@ -8,6 +8,7 @@
 			<div class="col-md">
 				<div class="card card-body">
 					<h5>Logs</h5>
+					<a class="btn btn-primary  btn-sm btn-block" href="{%url 'create_symptomlog'%}">Add Log</a>
 				</div>
 				<div class="card card-body">
 					<table class="table">
@@ -24,9 +25,9 @@
 							<td>{{i.date_created}}</td>
 							<td>{{i.side_effect}}</td>
 							<td>{{i.severity}}</td>
-							<td>{{i.durarion_in_hours}}</td>
-							<td><a class = "btn btn-sm btn-info" href="">Update</a></td>
-							<td><a class = "btn btn-sm btn-danger" href="">Remove</a></td>
+							<td>{{i.duration_in_hours}}</td>
+							<td><a class = "btn btn-sm btn-info" href="{% url 'update_symptomlog' i.id %}">Update</a></td>
+							<td><a class = "btn btn-sm btn-danger" href="{% url 'delete_symptomlog' i.id %}">Remove</a></td>
 						</tr>
 						{% endfor%}
 					</table>

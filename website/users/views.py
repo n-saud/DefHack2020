@@ -1,9 +1,49 @@
 from django.shortcuts import render, redirect
+from django.forms import inlineformset_factory
+from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 
 from.models import *
 from .forms import *
 
+def register(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+    else:
+        form = CreateUserForm()
+        if request.method == 'POST':
+            form = CreateUserForm(request.POST)
+            if form.is_valid():
+                form.save()
+                user = form.cleaned_data.get('username')
+                messages.success(request, 'Account was created for ' + user)
+                return redirect('/login')
+        context = {'form':form}
+        return render(request, 'users/register.html', context)
+
+def loginUser(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+    else:
+        if request.method == 'POST':
+            username = request.POST.get('username')
+            password =request.POST.get('password')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('home')
+            else:
+                messages.info(request, 'Username OR password is incorrect')
+    context = {}
+    return render(request, 'users/login.html', context)
+def logoutUser(request):
+    logout(request)
+    return redirect('/login')
+
+@login_required(login_url='login')
 def home(request):
     medications = Medication.objects.all() #change later
     medications_count = medications.count()
@@ -17,24 +57,30 @@ def home(request):
     'symptomlogs_count': symptomlogs_count, 'medlogs_count': medlogs_count, 'medications': medications, 'logs': logs}
     return render(request, 'users/dashboard.html',context)
 
-def register(request):
-    form = UserCreationForm();
-    context = {'form':form}
-    return render(request, 'users/register.html')
-def login(request):
-    context = {}
-    return render(request, 'users/login.html')
+@login_required(login_url='login')
 def medlogs(request):
     logs = MedLog.objects.all() #change later
     return render(request, 'users/medlogs.html',{'logs':logs})
+
+@login_required(login_url='login')
 def symptomlogs(request):
     logs = SymptomLog.objects.all() #change later
     return render(request, 'users/symptomlogs.html',{'logs':logs})
+
+@login_required(login_url='login')
 def medications(request):
     medications = Medication.objects.all() #change later
     return render(request, 'users/medications.html',{'medications':medications})
+
+@login_required(login_url='login')
 def data(request):
     return render(request, 'users/data.html')
+
+@login_required(login_url='login')
+def medReminders(request):
+        return render(request, 'users/medreminders.html')
+
+@login_required(login_url='login')
 def createMedlog(request):
     form = MedlogForm()
     if request.method == 'POST':
@@ -43,20 +89,25 @@ def createMedlog(request):
         if form.is_valid():
             form.save()
             return redirect('/')
-    context = {'form': form}
-    return render(request, 'users/create_medlog.html', context)
+    return_page = 'medlogs'
+    context = {'form': form, 'return_page': return_page}
+    return render(request, 'users/create.html', context)
 
+@login_required(login_url='login')
 def updateMedlog(request, pk):
     Medlog = MedLog.objects.get(id=pk)
     form = MedlogForm(instance=Medlog)
+    return_page = 'medlogs'
     if request.method == 'POST':
         #print("ATTENTION: ", request.POST)
         form = MedlogForm(request.POST, instance=Medlog)
         if form.is_valid():
             form.save()
             return redirect('/medlogs')
-    context = {'form': form}
-    return render(request, 'users/update_medlog.html', context)
+    context = {'form': form, 'return_page': return_page}
+    return render(request, 'users/update.html', context)
+
+@login_required(login_url='login')
 def deleteMedlog(request,pk):
     Medlog = MedLog.objects.get(id=pk)
     if request.method == 'POST':
@@ -64,4 +115,78 @@ def deleteMedlog(request,pk):
         return render(request, 'users/medlogs.html', context)
     return_page = 'medlogs'
     context = {'return_page': return_page, 'item':Medlog}
+    return render(request, 'users/delete.html', context)
+
+@login_required(login_url='login')
+def createSymptomLog(request):
+    form = SymptomLogForm()
+    if request.method == 'POST':
+        #print("ATTENTION: ", request.POST)
+        form = SymptomLogForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/medications')
+    return_page = 'symptomlogs'
+    context = {'form': form, 'return_page': return_page}
+    return render(request, 'users/create.html', context)
+
+@login_required(login_url='login')
+def updateSymptomlog(request, pk):
+    Symlog = SymptomLog.objects.get(id=pk)
+    form = SymptomLogForm(instance=Symlog)
+    return_page = 'symptomlogs'
+    if request.method == 'POST':
+        #print("ATTENTION: ", request.POST)
+        form = SymptomLogForm(request.POST, instance=Symlog)
+        if form.is_valid():
+            form.save()
+            return redirect('/symptomlogs')
+    context = {'form': form, 'return_page': return_page}
+    return render(request, 'users/update.html', context)
+
+@login_required(login_url='login')
+def deleteSymptomlog(request,pk):
+    Symlog = SymptomLog.objects.get(id=pk)
+    if request.method == 'POST':
+        order.delete()
+        return render(request, 'users/symptomlogs.html', context)
+    return_page = 'symptomlogs'
+    context = {'return_page': return_page, 'item':Symlog}
+    return render(request, 'users/delete.html', context)
+
+@login_required(login_url='login')
+def createMedication(request):
+    form = MedicationForm()
+    if request.method == 'POST':
+        #print("ATTENTION: ", request.POST)
+        form = MedicationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/medications')
+    return_page = 'medications'
+    context = {'form': form, 'return_page': return_page}
+    return render(request, 'users/create.html', context)
+
+@login_required(login_url='login')
+def updateMedication(request, pk):
+    medication = Medication.objects.get(id=pk)
+    form = MedicationForm(instance=medication)
+    return_page = 'medications'
+    if request.method == 'POST':
+        #print("ATTENTION: ", request.POST)
+        form = MedicationForm(request.POST, instance=medication)
+        if form.is_valid():
+            form.save()
+            return redirect('/medications')
+    context = {'form': form, 'return_page': return_page}
+    return render(request, 'users/update.html', context)
+
+@login_required(login_url='login')
+def deleteMedication(request,pk):
+    medication = Medication.objects.get(id=pk)
+    if request.method == 'POST':
+        order.delete()
+        return render(request, 'users/medications.html', context)
+    return_page = 'medications'
+    context = {'return_page': return_page, 'item':medication}
     return render(request, 'users/delete.html', context)

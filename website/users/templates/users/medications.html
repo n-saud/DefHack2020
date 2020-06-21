@@ -7,7 +7,8 @@
 		<div class="row">
 			<div class="col-md">
 				<div class="card card-body">
-					<h5>Medications</h5>
+					<h5>Medications </h5>
+					<a class="btn btn-primary  btn-sm btn-block" href="{%url 'create_medication'%}">Add Medications</a>
 				</div>
 				<div class="card card-body">
 					<table class="table">
@@ -15,6 +16,8 @@
 							<th>Medication</th>
 							<th>Treatment For</th>
 							<th>Side Effects</th>
+							<th>Dosage</th>
+							<th>Time</th>
 							<th>Update</th>
 							<th>Remove</th>
 						</tr>
@@ -24,8 +27,10 @@
 							<td>{{i.name}}</td>
 							<td>{{i.treatment_for}}</td>
 							<td>{{i.side_effects}}</td>
-							<td><a class = "btn btn-sm btn-info" href="">Update</a></td>
-							<td><a class = "btn btn-sm btn-danger" href="">Remove</a></td>
+							<td>{{i.dosage}}</td>
+							<td>{{i.time}}</td>
+							<td><a class = "btn btn-sm btn-info" href="{% url 'update_medication' i.id%}">Update</a></td>
+							<td><a class = "btn btn-sm btn-danger" href="{% url 'delete_medication' i.id%}">Remove</a></td>
 						</tr>
 						{% endfor%}
 					</table>

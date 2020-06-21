@@ -1,6 +1,10 @@
 from django.db import models
 
 # Create your models here.
+class Time(models.Model):
+    time = models.CharField(max_length=200, null=True)
+    def __str__(self):
+        return self.time
 class SideEffect(models.Model):
 
     name = models.CharField(max_length=200, null=True)
@@ -14,6 +18,8 @@ class Medication(models.Model):
     treatment_for = models.CharField(max_length=200, null=True)
     side_effects = models.ManyToManyField(SideEffect)
     dosage = models.CharField(max_length=200, null=True)
+    time = models.ManyToManyField(Time);
+
     def __str__(self):
         return self.name
 
@@ -38,7 +44,10 @@ class SymptomLog(models.Model):
     side_effect = models.ForeignKey(SideEffect, null = True, on_delete=models.SET_NULL)
     date_created = models.DateTimeField(auto_now_add=True, null=True)
     severity = models.CharField(max_length=200, choices = SEVERITY)
-    durarion_in_hours = models.FloatField(null=True)
+    duration_in_hours = models.FloatField(null=True)
+    def __str__(self):
+        name = "SYMPTOMLOG | Symptom: "+ self.side_effect.name+ "; Severity: "+ str(self.severity)+ "; Duration: "+ str(self.duration_in_hours)+"hour ; Date: "+ str(self.date_created)
+        return name
 class MedLog(models.Model):
     customer = models.ForeignKey(Customer, null = True, on_delete=models.SET_NULL)
     medication = models.ForeignKey(Medication, null = True, on_delete=models.SET_NULL)
@@ -47,3 +56,7 @@ class MedLog(models.Model):
     def __str__(self):
         name = "MEDLOG | Medication: "+ self.medication.name+ "; Doses: "+ str(self.number_of_doses)+ "; Date: "+ str(self.date_created)
         return name
+
+class MedReminders(models.Model):
+    customer = models.ForeignKey(Customer, null = True, on_delete=models.SET_NULL)
+    medication = models.ForeignKey(Medication, null = True, on_delete=models.SET_NULL)
