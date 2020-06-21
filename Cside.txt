@@ -1,0 +1,50 @@
+Ache
+Acne
+Allergic reaction
+Amnesia
+Blindness
+Bloating
+Blurry Vision
+Bruse
+Chest pain
+Chills
+Constipation
+Cough
+Depression
+Diarrhea
+Dizziness
+Drowsiness
+Dry mouth
+Dry skin
+Edema
+Fatigue
+Fever
+Hallucination
+Headache
+Hearing loss
+Heartburn
+Hiccups
+Hives
+Insomnia
+Loss of Appetite
+Nausea
+Nervousness
+Nose bleed
+Numbness
+Pneumonia
+Rash
+Redness
+Seizures
+Shock
+Slurred speech
+Stomach pain
+Stress
+Stroke
+Swelling
+Thirst
+Tinnitus
+Tremor
+Ulcer
+Vomiting
+Weight gain
+Weight loss
