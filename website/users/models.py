@@ -44,3 +44,6 @@ class MedLog(models.Model):
     medication = models.ForeignKey(Medication, null = True, on_delete=models.SET_NULL)
     date_created = models.DateTimeField(auto_now_add=True, null=True)
     number_of_doses = models.FloatField(null=True)
+    def __str__(self):
+        name = "MEDLOG | Medication: "+ self.medication.name+ "; Doses: "+ str(self.number_of_doses)+ "; Date: "+ str(self.date_created)
+        return name

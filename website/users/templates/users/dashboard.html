@@ -32,22 +32,21 @@
 	</div>
 
 	<div class="col-md-6">
-		<h5>LAST 5 LOGS</h5>
+		<h5>LAST 5 MEDICATION LOGS</h5>
 		<hr>
 		<div class="card card-body">
-			<a class="btn btn-primary  btn-sm btn-block" href="">Create Log</a>
+			<a class="btn btn-primary  btn-sm btn-block" href="{% url 'create_medlog' %}">Create Medication Log</a>
 			<table class="table table-sm">
 				<tr>
 					<th>Date</th>
-					<th>Side Effect</th>
-					<th>Severity</th>
-					<th>Duration (Hrs)</th>
+					<th>Medication</th>
+					<th>Doses</th>
 				</tr>
 				{% for i in logs%}
 				<tr>
 					<td>{{i.date_created}}</td>
-					<td>{{i.side_effect}}</td>
-					<td>{{i.severity}}</td>
+					<td>{{i.medication}}</td>
+					<td>{{i.number_of_doses}}</td>
 					<td>{{i.durarion_in_hours}}</td>
 				</tr>
 				{% endfor%}

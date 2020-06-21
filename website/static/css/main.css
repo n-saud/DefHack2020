@@ -3,15 +3,23 @@ body{
 }
 
 
-#total-orders{
-    background-color: #4cb4c7;
+#total-meds{
+    background-color: #CF8B8B;
 }
 
 
-#orders-delivered{
-    background-color: #7abecc;
+#total-side-effects{
+    background-color: #BD5F5F;
 }
 
-#orders-pending{
-    background-color: #7CD1C0;
+#total-symptomlogs{
+    background-color: #AA3939;
+}
+
+#total-medlogs{
+    background-color: #971919 ;
+}
+
+.add-buttons{
+    background-color: #850000;
 }
