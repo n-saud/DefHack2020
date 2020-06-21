@@ -19,6 +19,7 @@ urlpatterns = [
     path('update_medlog/<str:pk>/', views.updateMedlog, name="update_medlog"),
     path('delete_medlog/<str:pk>/', views.deleteMedlog, name="delete_medlog"),
 
+    path('add_symptom/', views.addSymptom, name="add_symptom"),
     path('create_symptomlog/', views.createSymptomLog, name="create_symptomlog"),
     path('update_symptomlog/<str:pk>/', views.updateSymptomlog, name="update_symptomlog"),
     path('delete_symptomlog/<str:pk>/', views.deleteSymptomlog, name="delete_symptomlog"),

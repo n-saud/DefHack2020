@@ -69,6 +69,7 @@ def medlogs(request):
     logs = customer.medlog_set.all()
     return render(request, 'users/medlogs.html',{'logs':logs})
 
+
 @login_required(login_url='login')
 def symptomlogs(request):
     customer = request.user.customer
@@ -95,6 +96,21 @@ def achievements(request):
 @login_required(login_url='login')
 def medReminders(request):
         return render(request, 'users/medreminders.html')
+
+@login_required(login_url='login')
+def addSymptom(request):
+    customer = request.user.customer
+    form = SideEffectForm(instance=customer)
+    return_page = 'symptomlogs'
+    if request.method == 'POST':
+        #print("ATTENTION: ", request.POST)
+        form = SideEffectForm(request.POST, instance=customer)
+        if form.is_valid():
+            form.save()
+            return redirect('/symptomlogs')
+    context = {'form': form, 'return_page': return_page}
+    return render(request, 'users/update.html', context)
+    return render(request, 'users/addsymptom.html')
 
 @login_required(login_url='login')
 def createMedlog(request):
