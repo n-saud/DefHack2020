@@ -13,7 +13,7 @@ class Medication(models.Model):
     name = models.CharField(max_length=200, null=True)
     treatment_for = models.CharField(max_length=200, null=True)
     side_effects = models.ManyToManyField(SideEffect)
-
+    dosage = models.CharField(max_length=200, null=True)
     def __str__(self):
         return self.name
 
@@ -26,7 +26,7 @@ class Customer(models.Model):
 
     def __str__(self):
         return self.name
-class Log(models.Model):
+class SymptomLog(models.Model):
     SEVERITY = (
         ('Mild', 'Mild'),
         ('Moderate', 'Moderate'),
@@ -39,3 +39,8 @@ class Log(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, null=True)
     severity = models.CharField(max_length=200, choices = SEVERITY)
     durarion_in_hours = models.FloatField(null=True)
+class MedLog(models.Model):
+    customer = models.ForeignKey(Customer, null = True, on_delete=models.SET_NULL)
+    medication = models.ForeignKey(Medication, null = True, on_delete=models.SET_NULL)
+    date_created = models.DateTimeField(auto_now_add=True, null=True)
+    number_of_doses = models.FloatField(null=True)
