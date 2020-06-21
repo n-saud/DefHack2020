@@ -27,9 +27,9 @@
 
 						{% for i in medications%}
 						<tr>
-							<td>{{i.name}}</td>
+							<td>{{i.medication.name}}</td>
 							<td>{{i.treatment_for}}</td>
-							<td>{{i.side_effects_list}}</td>
+							<td>{{i.medication.side_effects_list}}</td>
 							<td>{{i.dosage}}</td>
 							{% if i.morning %}
 								<td>✓</td>

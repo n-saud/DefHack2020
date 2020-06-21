@@ -19,7 +19,9 @@ body{
 #total-medlogs{
     background-color: #971919 ;
 }
-
+#total-header{
+    background-color: #971919 ;
+}
 .add-buttons{
     background-color: #850000;
 }

@@ -6,6 +6,8 @@ urlpatterns = [
     path('register/', views.register, name="register"),
     path('login/', views.loginUser, name="login"),
     path('logout/', views.logoutUser, name="logout"),
+    path('my_heros/', views.friends, name="friends"),
+    path('achievements/', views.achievements, name="achievements"),
 
     path('medlogs/', views.medlogs, name="medlogs"),
     path('medreminders/', views.medReminders, name="medreminders"),

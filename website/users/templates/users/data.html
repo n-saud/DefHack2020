@@ -6,19 +6,29 @@
 
 <br>
 
-		<div class="row">
-			<div class="col-md">
-				<div class="card card-body">
-					<h5>Data</h5>
-				</div>
-				<div class="card card-body">
-					<h5>Medication Logs</h5>
-				</div>
-				<div class="card card-body">
-					<h5>Symptom Logs</h5>
-				</div>
-			</div>
-
+<div class="row">
+	<div class="col-md">
+		<div class="card card-body">
+			<h5>Data</h5>
 		</div>
+		<div class="card card-body">
+			<h5>Medication Logs</h5>
+			<div id="myChart"></div>
+		</div>
+		<div class="card card-body">
+			<h5>Symptom Logs</h5>
+		</div>
+	</div>
 
+</div>
+<script>
+	var symptomChartData = {
+		"type": "line",
+	}
+
+	zingchart.render({
+	  id: 'myChart',
+	  data: myConfig,
+	});
+</script>
 {% endblock %}

@@ -1,27 +1,30 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-# Create your models here.
 class SideEffect(models.Model):
-
     name = models.CharField(max_length=200, null=True)
 
     def __str__(self):
         return self.name
-
+# Create your models here.
 class Medication(models.Model):
     name = models.CharField(max_length=200, null=True)
+    #json format string list
+    side_effects = models.ManyToManyField(SideEffect, blank=True)
+    side_effects_list = models.CharField(max_length=300, null=True)
+
+    def __str__(self):
+        return self.name
+class CustomerMedication(models.Model):
+    medication = models.ForeignKey(Medication, null = True, on_delete=models.SET_NULL)
     treatment_for = models.CharField(max_length=200, null=True)
-    side_effects = models.ManyToManyField(SideEffect)
     dosage = models.CharField(max_length=200, null=True)
     morning = models.BooleanField(default = False)
     midday = models.BooleanField(default = False)
     evening = models.BooleanField(default = False)
     bedtime = models.BooleanField(default = False)
-    side_effects_list = models.CharField(max_length=300, null=True)
-
     def __str__(self):
-        return self.name
+        return self.medication.name
 
 class Customer(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
@@ -29,7 +32,9 @@ class Customer(models.Model):
     phone = models.CharField(max_length=200, null=True)
     email = models.CharField(max_length=200, null=True)
     date_created = models.DateTimeField(auto_now_add=True, null=True)
-    medications = models.ManyToManyField(Medication)
+    medications = models.ManyToManyField(CustomerMedication, blank=True)
+    #json format string list
+    my_side_effects_list = models.ManyToManyField(SideEffect, blank=True)
 
     def __str__(self):
         return self.user.username

@@ -49,32 +49,18 @@ def logoutUser(request):
 def profilePage(request):
 	return render(request, 'accounts/user.html', context)
 
-def getSideEffects(medications):
-    all_side_effects = []
-    side_effects_list = []
-    for med in medications:
-        display_string = ''
-        for s in med.side_effects.all():
-            s1 = s.name
-            all_side_effects.append(s1)
-            display_string = display_string + s1 + ", "
-        side_effects_list.append(display_string)
-    all_side_effects = set(all_side_effects)
-    return side_effects_list, all_side_effects
-
 @login_required(login_url='login')
 def home(request):
     customer = request.user.customer
-    medications = customer.medications.all()
-    medications_count = medications.count()
-    side_effects_count = 0
-    side_effects_list, all_side_effects = getSideEffects(medications)
-    side_effects_count = len(all_side_effects)
-    logs = customer.medlog_set.all() #change later
-    symptomlogs_count = customer.symptomlog_set.all().count() #change later
-    medlogs_count = logs.count() #change later
+    customer_medications = customer.medications.all()
+    medications_count = customer_medications.count()
+    side_effects_list =  customer.my_side_effects_list.all()
+    side_effects_count = side_effects_list.count()
+    logs = customer.medlog_set.all()
+    symptomlogs_count = customer.symptomlog_set.all().count()
+    medlogs_count = logs.count()
     context = {'medications_count': medications_count, 'side_effects_count': side_effects_count,
-    'symptomlogs_count': symptomlogs_count, 'medlogs_count': medlogs_count, 'medications': medications, 'logs': logs}
+    'symptomlogs_count': symptomlogs_count, 'medlogs_count': medlogs_count, 'customer_medications': customer_medications, 'logs': logs}
     return render(request, 'users/dashboard.html',context)
 
 @login_required(login_url='login')
@@ -92,12 +78,19 @@ def symptomlogs(request):
 @login_required(login_url='login')
 def medications(request):
     customer = request.user.customer
-    medications = customer.medications.all()
-    return render(request, 'users/medications.html',{'medications':medications})
+    customer_medications = customer.medications.all()
+    return render(request, 'users/medications.html',{'customer_medications':customer_medications})
 
 @login_required(login_url='login')
 def data(request):
     return render(request, 'users/data.html')
+
+@login_required(login_url='login')
+def friends(request):
+    return render(request, 'users/friends.html')
+@login_required(login_url='login')
+def achievements(request):
+    return render(request, 'users/achievements.html')
 
 @login_required(login_url='login')
 def medReminders(request):
@@ -145,7 +138,9 @@ def deleteMedlog(request,pk):
 
 @login_required(login_url='login')
 def createSymptomLog(request):
+    customer = request.user.customer
     form = SymptomLogForm()
+    form.fields['side_effect'].queryset = customer.my_side_effects_list.all()
     if request.method == 'POST':
         #print("ATTENTION: ", request.POST)
         form = SymptomLogForm(request.POST)
