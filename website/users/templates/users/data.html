@@ -3,7 +3,15 @@
 {% block content %}
 
 <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+<style>
 
+    .chart-container {
+      height: 100%;
+      width: 100%;
+      min-height: 530px;
+    }
+
+  </style>
 <br>
 
 <div class="row">
@@ -12,11 +20,10 @@
 			<h5>Data</h5>
 		</div>
 		<div class="card card-body">
-			<h5>Medication Logs</h5>
-			<div id="myChart"></div>
+			<div id="medtracker" class="chart-container"></div>
 		</div>
 		<div class="card card-body">
-			<h5>Symptom Logs</h5>
+			<div id="symptoms_chart" class="chart-container"></div>
 		</div>
 	</div>
 
@@ -24,11 +31,156 @@
 <script>
 	var symptomChartData = {
 		"type": "line",
+		"title": {
+		    "text": "Symptoms Log",
+		    "font-size": "24px",
+		    "adjust-layout": true
+		  },
+		  "plotarea": {
+		    "margin": "dynamic 45 60 dynamic",
+		  },
+		  "legend": {
+		    "layout": "float",
+		    "background-color": "none",
+		    "border-width": 0,
+		    "shadow": 0,
+		    "align": "center",
+		    "adjust-layout": true,
+		    "toggle-action": "remove",
+		    "item": {
+		      "padding": 7,
+		      "marginRight": 17,
+		      "cursor": "hand"
+		    }
+		  },
+		  "scale-x": {
+			  label: {
+		          text: 'Date'
+		        },
+			  transform: {
+		          type: 'date',
+		          all: '%mm/%d/%y<br>%h:%i:%s'
+		        }
+		  },
+		  "scale-y": {
+			  label: {
+		          text: 'Severity'
+		        },
+			    "values":[
+					"None",
+					"Mild",
+					"Moderate",
+					"Severe",
+					"Very Severe",
+					"Worst Pain Possible",
+				],
+		  },
+		  series: [{
+	          values: [
+	            [1546333207000, "None"],
+	            [1546592407000, "Mild"],
+	            [1546765207000, "Mild"],
+	            [1547283607000, "None"],
+	            [1547542807000, "None"],
+	            [1547802007000, "None"],
+	            [1548061207000, "Severe"],
+	            [1548234007000, "Moderate"],
+	            [1548579607000, "Moderate"],
+	            [1548838807000, "Moderate"]
+	          ],
+			  text: 'Headaches',
+	          lineColor: '#9c27b0',
+	          marker: {
+	            backgroundColor: '#9c27b0'
+	          }
+	        },
+			{
+  	          values: [
+  	            [1546333207000, "Mild"],
+  	            [1546592407000, "Moderate"],
+  	            [1546765207000, "Moderate"],
+  	            [1547283607000, "Moderate"],
+  	            [1547542807000, "Severe"],
+  	            [1547802007000, "Severe"],
+  	            [1548061207000, "Severe"],
+  	            [1548234007000, "Mild"],
+  	            [1548579607000, "Moderate"],
+  	            [1548838807000, "None"]
+  	          ],
+  			  text: 'Dizziness',
+  	          lineColor: '#f57c00',
+  	          marker: {
+  	            backgroundColor: '#ffb74d'
+  	          }
+  	        },
+		]
 	}
 
 	zingchart.render({
-	  id: 'myChart',
-	  data: myConfig,
-	});
+	  id: 'symptoms_chart',
+	  data: symptomChartData,
+  });
+
+  var medtracker = {
+      "type": 'line',
+	  "title": {
+		  "text": "Medications Log",
+		  "font-size": "24px",
+		  "adjust-layout": true
+		},
+      "backgroundColor": '#fff',
+	  "legend": {
+		"layout": "float",
+		"background-color": "none",
+		"border-width": 0,
+		"shadow": 0,
+		"align": "center",
+		"adjust-layout": true,
+		"toggle-action": "remove",
+		"item": {
+		  "padding": 7,
+		  "marginRight": 17,
+		  "cursor": "hand"
+		}
+	  },
+      scaleX: {
+		  label: {
+  			text: 'Date'
+  		  },
+  		transform: {
+  			type: 'date',
+  			all: '%mm/%d/%y<br>%h:%i:%s'
+  		  }
+      },
+	  scaleY: {
+        label: {
+          text: 'Number of Occurrences'
+        },
+      },
+	  series: [{
+		  values: [
+	            [1546333207000, 1],
+	            [1546592407000, 2],
+	            [1546765207000, 1],
+	            [1547283607000, 0],
+	            [1547542807000, 0],
+	            [1547802007000, 0],
+	            [1548061207000, 1],
+	            [1548234007000, 0],
+	            [1548579607000, 1],
+	            [1548838807000, 0]
+	          ],
+			  text: 'Advil',
+	          lineColor: '#9c27b0',
+	          marker: {
+	            backgroundColor: '#9c27b0'
+	          }
+	        }]
+}
+	zingchart.render({
+	  id: 'medtracker',
+	  data: medtracker,
+  });
+
 </script>
 {% endblock %}
