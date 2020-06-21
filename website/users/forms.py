@@ -13,7 +13,7 @@ class MedlogForm(ModelForm):
 class MedicationForm(ModelForm):
     class Meta:
         model = Medication
-        fields = '__all__'
+        exclude  = ('side_effects_list',)
 class SymptomLogForm(ModelForm):
     class Meta:
         model = SymptomLog

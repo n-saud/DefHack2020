@@ -2,10 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 
 # Create your models here.
-class Time(models.Model):
-    time = models.CharField(max_length=200, null=True)
-    def __str__(self):
-        return self.time
 class SideEffect(models.Model):
 
     name = models.CharField(max_length=200, null=True)
@@ -14,12 +10,15 @@ class SideEffect(models.Model):
         return self.name
 
 class Medication(models.Model):
-
     name = models.CharField(max_length=200, null=True)
     treatment_for = models.CharField(max_length=200, null=True)
     side_effects = models.ManyToManyField(SideEffect)
     dosage = models.CharField(max_length=200, null=True)
-    time = models.ManyToManyField(Time);
+    morning = models.BooleanField(default = False)
+    midday = models.BooleanField(default = False)
+    evening = models.BooleanField(default = False)
+    bedtime = models.BooleanField(default = False)
+    side_effects_list = models.CharField(max_length=300, null=True)
 
     def __str__(self):
         return self.name

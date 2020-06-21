@@ -17,7 +17,10 @@
 							<th>Treatment For</th>
 							<th>Side Effects</th>
 							<th>Dosage</th>
-							<th>Time</th>
+							<th>Morning</th>
+							<th>Midday</th>
+							<th>Evening</th>
+							<th>Bedtime</th>
 							<th>Update</th>
 							<th>Remove</th>
 						</tr>
@@ -26,9 +29,28 @@
 						<tr>
 							<td>{{i.name}}</td>
 							<td>{{i.treatment_for}}</td>
-							<td>{{i.side_effects}}</td>
+							<td>{{i.side_effects_list}}</td>
 							<td>{{i.dosage}}</td>
-							<td>{{i.time}}</td>
+							{% if i.morning %}
+								<td>✓</td>
+							{% else %}
+								<td></td>
+							{% endif %}
+							{% if i.midday %}
+								<td>✓</td>
+							{% else %}
+								<td></td>
+							{% endif %}
+							{% if i.evening %}
+								<td>✓</td>
+							{% else %}
+								<td></td>
+							{% endif %}
+							{% if i.bedtime %}
+								<td>✓</td>
+							{% else %}
+								<td></td>
+							{% endif %}
 							<td><a class = "btn btn-sm btn-info" href="{% url 'update_medication' i.id%}">Update</a></td>
 							<td><a class = "btn btn-sm btn-danger" href="{% url 'delete_medication' i.id%}">Remove</a></td>
 						</tr>

@@ -49,14 +49,9 @@ def logoutUser(request):
 def profilePage(request):
 	return render(request, 'accounts/user.html', context)
 
-@login_required(login_url='login')
-def home(request):
-    customer = request.user.customer
-    medications = customer.medications.all()
-    medications_count = medications.count()
-    side_effects_count =0
-    side_effects_list = []
+def getSideEffects(medications):
     all_side_effects = []
+    side_effects_list = []
     for med in medications:
         display_string = ''
         for s in med.side_effects.all():
@@ -65,6 +60,15 @@ def home(request):
             display_string = display_string + s1 + ", "
         side_effects_list.append(display_string)
     all_side_effects = set(all_side_effects)
+    return side_effects_list, all_side_effects
+
+@login_required(login_url='login')
+def home(request):
+    customer = request.user.customer
+    medications = customer.medications.all()
+    medications_count = medications.count()
+    side_effects_count = 0
+    side_effects_list, all_side_effects = getSideEffects(medications)
     side_effects_count = len(all_side_effects)
     logs = customer.medlog_set.all() #change later
     symptomlogs_count = customer.symptomlog_set.all().count() #change later
@@ -179,6 +183,7 @@ def deleteSymptomlog(request,pk):
     context = {'return_page': return_page, 'item':Symlog}
     return render(request, 'users/delete.html', context)
 
+### Don't create medication, add medication from created list
 @login_required(login_url='login')
 def createMedication(request):
     form = MedicationForm()
