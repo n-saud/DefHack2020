@@ -9,7 +9,7 @@ from django import forms
 class MedlogForm(ModelForm):
     class Meta:
         model = MedLog
-        fields = '__all__'
+        exclude  = ('customer',)
 class MedicationForm(ModelForm):
     class Meta:
         model = Medication
@@ -17,7 +17,7 @@ class MedicationForm(ModelForm):
 class SymptomLogForm(ModelForm):
     class Meta:
         model = SymptomLog
-        fields = '__all__'
+        exclude  = ('customer',)
 class CreateUserForm(UserCreationForm):
 	class Meta:
 		model = User

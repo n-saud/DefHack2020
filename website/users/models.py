@@ -25,15 +25,15 @@ class Medication(models.Model):
         return self.name
 
 class Customer(models.Model):
-    user = models.OneToOneField(User, null=True, on_delete=models.CASCA)
+    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=200, null=True)
     phone = models.CharField(max_length=200, null=True)
     email = models.CharField(max_length=200, null=True)
     date_created = models.DateTimeField(auto_now_add=True, null=True)
-    medications = models.ManyToManyField(Medication, null=True)
+    medications = models.ManyToManyField(Medication)
 
     def __str__(self):
-        return self.name
+        return self.user.username
 class SymptomLog(models.Model):
     SEVERITY = (
         ('Mild', 'Mild'),

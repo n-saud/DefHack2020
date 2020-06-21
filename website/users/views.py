@@ -51,31 +51,44 @@ def profilePage(request):
 
 @login_required(login_url='login')
 def home(request):
-    medications = Medication.objects.all() #change later
+    customer = request.user.customer
+    medications = customer.medications.all()
     medications_count = medications.count()
     side_effects_count =0
+    side_effects_list = []
+    all_side_effects = []
     for med in medications:
-        side_effects_count = side_effects_count + med.side_effects.count()
-    logs = MedLog.objects.all() #change later
-    symptomlogs_count = SymptomLog.objects.all().count() #change later
-    medlogs_count = MedLog.objects.all().count() #change later
+        display_string = ''
+        for s in med.side_effects.all():
+            s1 = s.name
+            all_side_effects.append(s1)
+            display_string = display_string + s1 + ", "
+        side_effects_list.append(display_string)
+    all_side_effects = set(all_side_effects)
+    side_effects_count = len(all_side_effects)
+    logs = customer.medlog_set.all() #change later
+    symptomlogs_count = customer.symptomlog_set.all().count() #change later
+    medlogs_count = logs.count() #change later
     context = {'medications_count': medications_count, 'side_effects_count': side_effects_count,
     'symptomlogs_count': symptomlogs_count, 'medlogs_count': medlogs_count, 'medications': medications, 'logs': logs}
     return render(request, 'users/dashboard.html',context)
 
 @login_required(login_url='login')
 def medlogs(request):
-    logs = MedLog.objects.all() #change later
+    customer = request.user.customer
+    logs = customer.medlog_set.all()
     return render(request, 'users/medlogs.html',{'logs':logs})
 
 @login_required(login_url='login')
 def symptomlogs(request):
-    logs = SymptomLog.objects.all() #change later
+    customer = request.user.customer
+    logs = customer.symptomlog_set.all()
     return render(request, 'users/symptomlogs.html',{'logs':logs})
 
 @login_required(login_url='login')
 def medications(request):
-    medications = Medication.objects.all() #change later
+    customer = request.user.customer
+    medications = customer.medications.all()
     return render(request, 'users/medications.html',{'medications':medications})
 
 @login_required(login_url='login')
@@ -93,7 +106,10 @@ def createMedlog(request):
         #print("ATTENTION: ", request.POST)
         form = MedlogForm(request.POST)
         if form.is_valid():
-            form.save()
+            customer = request.user.customer
+            new_medlog = form.save(commit=False)
+            new_medlog.customer = customer
+            new_medlog.save()
             return redirect('/')
     return_page = 'medlogs'
     context = {'form': form, 'return_page': return_page}
@@ -130,8 +146,11 @@ def createSymptomLog(request):
         #print("ATTENTION: ", request.POST)
         form = SymptomLogForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('/medications')
+            customer = request.user.customer
+            new_symptomlog = form.save(commit=False)
+            new_symptomlog.customer = customer
+            new_symptomlog.save()
+            return redirect('/symptomlogs')
     return_page = 'symptomlogs'
     context = {'form': form, 'return_page': return_page}
     return render(request, 'users/create.html', context)
@@ -167,7 +186,9 @@ def createMedication(request):
         #print("ATTENTION: ", request.POST)
         form = MedicationForm(request.POST)
         if form.is_valid():
-            form.save()
+            customer = request.user.customer
+            medication = form.save()
+            customer.medications.add(medication)
             return redirect('/medications')
     return_page = 'medications'
     context = {'form': form, 'return_page': return_page}
