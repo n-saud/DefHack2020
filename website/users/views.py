@@ -8,40 +8,46 @@ from django.contrib.auth.models import User
 
 from.models import *
 from .forms import *
+from .decorators import *
 
+@unauthenticated_user
 def register(request):
-    if request.user.is_authenticated:
-        return redirect('home')
-    else:
-        form = CreateUserForm()
-        if request.method == 'POST':
-            form = CreateUserForm(request.POST)
-            if form.is_valid():
-                form.save()
-                user = form.cleaned_data.get('username')
-                messages.success(request, 'Account was created for ' + user)
-                return redirect('/login')
-        context = {'form':form}
-        return render(request, 'users/register.html', context)
+    form = CreateUserForm()
+    if request.method == 'POST':
+        form = CreateUserForm(request.POST)
+        if form.is_valid():
+            user = form.save()
 
+            Customer.objects.create(
+                user=user,name = user.username, phone = None, email = user.email
+            )
+            messages.success(request, 'Account was created for ' + user.username)
+            return redirect('/login')
+    context = {'form':form}
+    return render(request, 'users/register.html', context)
+
+@unauthenticated_user
 def loginUser(request):
-    if request.user.is_authenticated:
-        return redirect('home')
-    else:
-        if request.method == 'POST':
-            username = request.POST.get('username')
-            password =request.POST.get('password')
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request, user)
-                return redirect('home')
-            else:
-                messages.info(request, 'Username OR password is incorrect')
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password =request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('home')
+        else:
+            messages.info(request, 'Username OR password is incorrect')
     context = {}
     return render(request, 'users/login.html', context)
+
 def logoutUser(request):
     logout(request)
-    return redirect('/login')
+    return redirect('login')
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['customer'])
+def profilePage(request):
+	return render(request, 'accounts/user.html', context)
 
 @login_required(login_url='login')
 def home(request):
@@ -111,7 +117,7 @@ def updateMedlog(request, pk):
 def deleteMedlog(request,pk):
     Medlog = MedLog.objects.get(id=pk)
     if request.method == 'POST':
-        order.delete()
+        Medlog.delete()
         return render(request, 'users/medlogs.html', context)
     return_page = 'medlogs'
     context = {'return_page': return_page, 'item':Medlog}
@@ -148,7 +154,7 @@ def updateSymptomlog(request, pk):
 def deleteSymptomlog(request,pk):
     Symlog = SymptomLog.objects.get(id=pk)
     if request.method == 'POST':
-        order.delete()
+        Symlog.delete()
         return render(request, 'users/symptomlogs.html', context)
     return_page = 'symptomlogs'
     context = {'return_page': return_page, 'item':Symlog}
@@ -185,7 +191,7 @@ def updateMedication(request, pk):
 def deleteMedication(request,pk):
     medication = Medication.objects.get(id=pk)
     if request.method == 'POST':
-        order.delete()
+        medication.delete()
         return render(request, 'users/medications.html', context)
     return_page = 'medications'
     context = {'return_page': return_page, 'item':medication}
