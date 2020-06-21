@@ -5,6 +5,10 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.http import JsonResponse
+from django.contrib import admin
+from django.contrib.auth.models import User
+from django.contrib.auth.admin import UserAdmin
 
 from.models import *
 from .forms import *
@@ -50,7 +54,7 @@ def profilePage(request):
 	return render(request, 'accounts/user.html', context)
 
 @login_required(login_url='login')
-def initiate(request):
+def initiateDatabase(request):
     line = ['Acetaminophen', 'Adenosine', 'Advil', 'Allopurinol', 'Alprazolam', 'Amlodipine', 'Amoxicillin', 'Aspirin', 'Atenolol', 'Azithromycin', 'Bupropion', 'Carvedilol', 'Citalopram', 'Clopidogrel', 'Cyclobenzaprine', 'Duloxetine', 'Escitalopram', 'Fenofibrate', 'Fluoxetine', 'Fluticasone', 'Furosemide', 'Gabapentin', 'Hydrochlorothiazide', 'Hydroxyzine', 'Levothyroxine', 'Liothryonine', 'Lipitor', 'Lisinopril', 'Losartan', 'Meloxicam', 'Metformin', 'Metoprolol', 'Montelukast', 'Naloxone', 'NasonexOmeprazole', 'Pantoprazole', 'Pravastatin', 'Prednisone', 'Sertraline', 'Simvastatin', 'Tamsulosin', 'Tramadol', 'Trazodone', 'Tylenol', 'Venlafaxine', 'Ventolin', 'Vicodin', 'Warfarin', 'Zolpidee']
     for i in range(len(line)):
         Med = Medication(name=line[i])
@@ -61,13 +65,35 @@ def initiate(request):
         Symp.save()
     return redirect('/')
 
+def getData(request):
+    customer = request.user.customer
+    medlogs = customer.medlog_set.all()
+    customer_medications = customer.medications.all()
+    medlog_data = []
+    for cmed in customer_medications:
+        med_data = []
+        for log in cmed.medication.medlog_set.all():
+            med_data.append({str(log.date_created):log.number_of_doses})
+        medlog_data.append({cmed.medication.name:med_data})
+
+    slogs = customer.symptomlog_set.all()
+    customer_symptoms = customer.my_side_effects_list.all()
+    slog_data = []
+    for side_effect in customer_symptoms:
+        symptom_data = []
+        for log in side_effect.symptomlog_set.all():
+            symptom_data.append({log.date_created:log.number_of_doses})
+        slog_data.append({side_effect:symptom_data})
+    graph_data = [{"mdata":medlog_data},{"sdata":slog_data}]
+    return JsonResponse(graph_data, safe=False)
+
 @login_required(login_url='login')
 def home(request):
     customer = request.user.customer
     customer_medications = customer.medications.all()
     medications_count = customer_medications.count()
     side_effects_list =  customer.my_side_effects_list.all()
-    side_effects_count = side_effects_list.count()
+    side_effects_count = side_effects_list.distinct().count()
     logs = customer.medlog_set.all()
     symptomlogs_count = customer.symptomlog_set.all().count()
     medlogs_count = logs.count()
@@ -157,11 +183,11 @@ def updateMedlog(request, pk):
 @login_required(login_url='login')
 def deleteMedlog(request,pk):
     Medlog = MedLog.objects.get(id=pk)
+    return_page = 'medlogs'
+    context = {'return_page': return_page, 'item':Medlog}
     if request.method == 'POST':
         Medlog.delete()
         return render(request, 'users/medlogs.html', context)
-    return_page = 'medlogs'
-    context = {'return_page': return_page, 'item':Medlog}
     return render(request, 'users/delete.html', context)
 
 @login_required(login_url='login')
@@ -199,11 +225,11 @@ def updateSymptomlog(request, pk):
 @login_required(login_url='login')
 def deleteSymptomlog(request,pk):
     Symlog = SymptomLog.objects.get(id=pk)
+    return_page = 'symptomlogs'
+    context = {'return_page': return_page, 'item':Symlog}
     if request.method == 'POST':
         Symlog.delete()
         return render(request, 'users/symptomlogs.html', context)
-    return_page = 'symptomlogs'
-    context = {'return_page': return_page, 'item':Symlog}
     return render(request, 'users/delete.html', context)
 
 ### Don't create medication, add medication from created list
@@ -217,6 +243,9 @@ def createMedication(request):
             customer = request.user.customer
             medication = form.save()
             customer.medications.add(medication)
+            side_effects = medication.medication.side_effects.all()
+            for se in side_effects  :
+                customer.my_side_effects_list.add(se)
             return redirect('/medications')
     return_page = 'medications'
     context = {'form': form, 'return_page': return_page}
@@ -238,10 +267,10 @@ def updateMedication(request, pk):
 
 @login_required(login_url='login')
 def deleteMedication(request,pk):
-    medication = Medication.objects.get(id=pk)
-    if request.method == 'POST':
-        medication.delete()
-        return render(request, 'users/medications.html', context)
+    medication = CustomerMedication.objects.get(id=pk)
     return_page = 'medications'
     context = {'return_page': return_page, 'item':medication}
+    if request.method == 'POST':
+        medication.delete()
+        return render(request, 'users/medications.html',context)
     return render(request, 'users/delete.html', context)

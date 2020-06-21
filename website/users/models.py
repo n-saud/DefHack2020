@@ -17,8 +17,8 @@ class Medication(models.Model):
         return self.name
 class CustomerMedication(models.Model):
     medication = models.ForeignKey(Medication, null = True, on_delete=models.SET_NULL)
-    treatment_for = models.CharField(max_length=200, null=True)
-    dosage = models.CharField(max_length=200, null=True)
+    treatment_for = models.CharField(max_length=200, null=True ,blank = True)
+    dosage = models.CharField(max_length=200, null=True, blank = True)
     morning = models.BooleanField(default = False)
     midday = models.BooleanField(default = False)
     evening = models.BooleanField(default = False)
