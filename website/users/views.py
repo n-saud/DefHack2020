@@ -50,6 +50,12 @@ def profilePage(request):
 	return render(request, 'accounts/user.html', context)
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['admin'])
+def initiate(request):
+    
+    return redirect('/')
+
+@login_required(login_url='login')
 def home(request):
     customer = request.user.customer
     customer_medications = customer.medications.all()
