@@ -14,10 +14,6 @@ from.models import *
 from .forms import *
 from .decorators import *
 
-import json
-import requests
-
-
 @unauthenticated_user
 def register(request):
     form = CreateUserForm()
@@ -59,23 +55,9 @@ def profilePage(request):
 
 @login_required(login_url='login')
 def initiateDatabase(request):
-    line = ['Acetaminophen', 'Adenosine', 'Advil', 'Allopurinol', 'Alprazolam', 'Amlodipine', 'Amoxicillin', 'Aspirin', 'Atenolol', 'Azithromycin', 'Bupropion', 'Carvedilol', 'Citalopram', 'Clopidogrel', 'Cyclobenzaprine', 'Duloxetine', 'Escitalopram', 'Fenofibrate', 'Fluoxetine', 'Fluticasone', 'Furosemide', 'Gabapentin', 'Hydrochlorothiazide', 'Hydroxyzine', 'Levothyroxine', 'Lipitor', 'Lisinopril', 'Losartan', 'Meloxicam', 'Metformin', 'Metoprolol', 'Montelukast', 'Naloxone', 'Nasonex', 'Omeprazole', 'Pantoprazole', 'Pravastatin', 'Prednisone', 'Sertraline', 'Simvastatin', 'Tamsulosin', 'Tramadol', 'Trazodone', 'Tylenol', 'Venlafaxine', 'Ventolin', 'Vicodin', 'Warfarin']
-    line2 = ['Ache', 'Acne', 'Allergic reaction', 'Amnesia', 'Blindness', 'Bloating', 'Blurry Vision', 'Bruse', 'Chest pain', 'Chills', 'Constipation', 'Cough', 'Depression', 'Diarrhea', 'Dizziness', 'Drowsiness', 'Dry mouth', 'Dry skin', 'Edema', 'Fatigue', 'Fever', 'Hallucination', 'Headache', 'Hearing loss', 'Heartburn', 'Hiccups', 'Hives', 'Insomnia', 'Loss of Appetite', 'Nausea', 'Nervousness', 'Nose bleed', 'Numbness', 'Pneumonia', 'Rash', 'Redness', 'Seizures', 'Shock', 'Slurred speech', 'Stomach pain', 'Stress', 'Stroke', 'Swelling', 'Thirst', 'Tinnitus', 'Tremor', 'Ulcer', 'Vomiting', 'Weight gain', 'Weight loss']
-    l = []
+    line = ['Acetaminophen', 'Adenosine', 'Advil', 'Allopurinol', 'Alprazolam', 'Amlodipine', 'Amoxicillin', 'Aspirin', 'Atenolol', 'Azithromycin', 'Bupropion', 'Carvedilol', 'Citalopram', 'Clopidogrel', 'Cyclobenzaprine', 'Duloxetine', 'Escitalopram', 'Fenofibrate', 'Fluoxetine', 'Fluticasone', 'Furosemide', 'Gabapentin', 'Hydrochlorothiazide', 'Hydroxyzine', 'Levothyroxine', 'Liothryonine', 'Lipitor', 'Lisinopril', 'Losartan', 'Meloxicam', 'Metformin', 'Metoprolol', 'Montelukast', 'Naloxone', 'NasonexOmeprazole', 'Pantoprazole', 'Pravastatin', 'Prednisone', 'Sertraline', 'Simvastatin', 'Tamsulosin', 'Tramadol', 'Trazodone', 'Tylenol', 'Venlafaxine', 'Ventolin', 'Vicodin', 'Warfarin', 'Zolpidee']
     for i in range(len(line)):
         Med = Medication(name=line[i])
-        information = requests.get("https://api.fda.gov/drug/label.json?search=" + line[i])
-        info = json.loads(information.content)
-        if info["results"][0].get("stop_use"):
-            for pmatch in line2:
-                if pmatch.strip().lower() in info["results"][0].get("stop_use")[0].lower():
-                    l.append(pmatch)
-        else:
-            for pmatch in line2:
-                if pmatch.strip().lower() in info["results"][0]["adverse_reactions"][0].lower():
-                    l.append(pmatch)
-        Med.name=line[i]
-        Med.side_effect_list = str(l)
         Med.save()
     line2 = ['Ache', 'Acne', 'Allergic reaction', 'Amnesia', 'Blindness', 'Bloating', 'Blurry Vision', 'Bruse', 'Chest pain', 'Chills', 'Constipation', 'Cough', 'Depression', 'Diarrhea', 'Dizziness', 'Drowsiness', 'Dry mouth', 'Dry skin', 'Edema', 'Fatigue', 'Fever', 'Hallucination', 'Headache', 'Hearing loss', 'Heartburn', 'Hiccups', 'Hives', 'Insomnia', 'Loss of Appetite', 'Nausea', 'Nervousness', 'Nose bleed', 'Numbness', 'Pneumonia', 'Rash', 'Redness', 'Seizures', 'Shock', 'Slurred speech', 'Stomach pain', 'Stress', 'Stroke', 'Swelling', 'Thirst', 'Tinnitus', 'Tremor', 'Ulcer', 'Vomiting', 'Weight gain', 'Weight loss']
     for i in range(len(line)):
@@ -87,22 +69,26 @@ def getData(request):
     customer = request.user.customer
     medlogs = customer.medlog_set.all()
     customer_medications = customer.medications.all()
+    print(customer_medications)
+    print(customer.medlog_set)
     medlog_data = []
     for cmed in customer_medications:
         med_data = []
-        for log in cmed.medication.medlog_set.all():
+        for log in customer.medlog_set.filter(medication=cmed.medication):
             med_data.append({str(log.date_created):log.number_of_doses})
         medlog_data.append({cmed.medication.name:med_data})
 
     slogs = customer.symptomlog_set.all()
     customer_symptoms = customer.my_side_effects_list.all()
     slog_data = []
+
     for side_effect in customer_symptoms:
         symptom_data = []
         for log in side_effect.symptomlog_set.all():
-            symptom_data.append({log.date_created:log.number_of_doses})
-        slog_data.append({side_effect:symptom_data})
+            symptom_data.append({str(log.date_created):log.severity})
+        slog_data.append({side_effect.name:symptom_data})
     graph_data = [{"mdata":medlog_data},{"sdata":slog_data}]
+
     return JsonResponse(graph_data, safe=False)
 
 @login_required(login_url='login')
@@ -179,7 +165,7 @@ def createMedlog(request):
             new_medlog = form.save(commit=False)
             new_medlog.customer = customer
             new_medlog.save()
-            return redirect('/')
+            return redirect('/medlogs')
     return_page = 'medlogs'
     context = {'form': form, 'return_page': return_page}
     return render(request, 'users/create.html', context)
@@ -205,7 +191,7 @@ def deleteMedlog(request,pk):
     context = {'return_page': return_page, 'item':Medlog}
     if request.method == 'POST':
         Medlog.delete()
-        return render(request, 'users/medlogs.html', context)
+        return redirect('/medlogs')
     return render(request, 'users/delete.html', context)
 
 @login_required(login_url='login')
@@ -247,10 +233,9 @@ def deleteSymptomlog(request,pk):
     context = {'return_page': return_page, 'item':Symlog}
     if request.method == 'POST':
         Symlog.delete()
-        return render(request, 'users/symptomlogs.html', context)
+        return redirect('/symptomlogs')
     return render(request, 'users/delete.html', context)
 
-### Don't create medication, add medication from created list
 @login_required(login_url='login')
 def createMedication(request):
     form = MedicationForm()
@@ -272,11 +257,10 @@ def createMedication(request):
 @login_required(login_url='login')
 def updateMedication(request, pk):
     medication = Medication.objects.get(id=pk)
-    form = MedicationForm(instance=medication)
+    form = UpdateMedicationForm(instance=medication)
     return_page = 'medications'
     if request.method == 'POST':
-        #print("ATTENTION: ", request.POST)
-        form = MedicationForm(request.POST, instance=medication)
+        form = UpdateMedicationForm(request.POST, instance=medication)
         if form.is_valid():
             form.save()
             return redirect('/medications')
@@ -286,9 +270,13 @@ def updateMedication(request, pk):
 @login_required(login_url='login')
 def deleteMedication(request,pk):
     medication = CustomerMedication.objects.get(id=pk)
+    if request.method == 'POST':
+        side_effects = medication.medication.side_effects.all()
+        for se in side_effects:
+            customer = request.user.customer
+            customer.my_side_effects_list.remove(se)
+        medication.delete()
+        return redirect('/medications')
     return_page = 'medications'
     context = {'return_page': return_page, 'item':medication}
-    if request.method == 'POST':
-        medication.delete()
-        return render(request, 'users/medications.html',context)
     return render(request, 'users/delete.html', context)

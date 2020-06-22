@@ -19,6 +19,10 @@ class MedicationForm(ModelForm):
     class Meta:
         model = CustomerMedication
         fields = '__all__'
+class UpdateMedicationForm(ModelForm):
+    class Meta:
+        model = CustomerMedication
+        exclude = ('medication',)
 class SymptomLogForm(ModelForm):
     class Meta:
         model = SymptomLog
