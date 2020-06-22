@@ -84,25 +84,26 @@ def getData(request):
     customer = request.user.customer
     medlogs = customer.medlog_set.all()
     customer_medications = customer.medications.all()
-    print(customer_medications)
-    print(customer.medlog_set)
+    meds_names = []
     medlog_data = []
     for cmed in customer_medications:
         med_data = []
         for log in customer.medlog_set.filter(medication=cmed.medication):
             med_data.append({str(log.date_created):log.number_of_doses})
         medlog_data.append({cmed.medication.name:med_data})
+        meds_names.append(cmed.medication.name)
 
     slogs = customer.symptomlog_set.all()
     customer_symptoms = customer.my_side_effects_list.all()
     slog_data = []
-
+    s_names = []
     for side_effect in customer_symptoms:
         symptom_data = []
         for log in side_effect.symptomlog_set.all():
             symptom_data.append({str(log.date_created):log.severity})
         slog_data.append({side_effect.name:symptom_data})
-    graph_data = [{"mdata":medlog_data},{"sdata":slog_data}]
+        s_names.append(side_effect.name)
+    graph_data = [{"meds_names":meds_names},{"mdata":medlog_data},{"s_names":s_names},{"sdata":slog_data}]
 
     return JsonResponse(graph_data, safe=False)
 

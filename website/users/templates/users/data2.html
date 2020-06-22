@@ -1,0 +1,160 @@
+{% extends 'users/main.html' %}
+
+{% block content %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+<style>
+
+    .chart-container {
+      height: 100%;
+      width: 100%;
+      min-height: 530px;
+    }
+
+  </style>
+<br>
+
+<div class="row">
+	<div class="col-md">
+		<div class="card card-body">
+			<h5>Data</h5>
+		</div>
+		<div class="card card-body">
+			<div id="medtracker" class="chart-container"></div>
+		</div>
+		<div class="card card-body">
+			<div id="symptoms_chart" class="chart-container"></div>
+		</div>
+	</div>
+
+</div>
+<script>
+    var dataURL = '/getData'
+    $.ajax({
+        method:'GET',
+        url:dataURL,
+        success:function(response){
+            console.log('RESPONSE:', response)
+            var mdata = Object.values("mdata")
+            var sdata = Object.values("sdata")
+            var meds_names = Object.values("meds_names")
+            var s_names = Object.values("s_names")
+            var svalues = []
+            var medvalues = []
+            for name in meds_names{
+                log_values = Object.values(name)
+                mvalues.append({values:log_values, text:name})
+            }
+            for name in s_names{
+                log_values = Object.values(name)
+                mvalues.append({values:log_values, text:name})
+            }
+
+			console.log('Complete!')
+			buildSChart()
+            buildMChart()
+
+		}
+	})
+    function buildSChart():{
+    	var symptomChartData = {
+    		"type": "line",
+    		"title": {
+    		    "text": "Symptoms Log",
+    		    "font-size": "24px",
+    		    "adjust-layout": true
+    		  },
+    		  "plotarea": {
+    		    "margin": "dynamic 45 60 dynamic",
+    		  },
+    		  "legend": {
+    		    "layout": "float",
+    		    "background-color": "none",
+    		    "border-width": 0,
+    		    "shadow": 0,
+    		    "align": "center",
+    		    "adjust-layout": true,
+    		    "toggle-action": "remove",
+    		    "item": {
+    		      "padding": 7,
+    		      "marginRight": 17,
+    		      "cursor": "hand"
+    		    }
+    		  },
+    		  "scale-x": {
+    			  label: {
+    		          text: 'Date'
+    		        },
+    			  transform: {
+    		          type: 'date',
+    		          all: '%mm/%d/%y<br>%h:%i:%s'
+    		        }
+    		  },
+    		  "scale-y": {
+    			  label: {
+    		          text: 'Severity'
+    		        },
+    			    "values":[
+    					"None",
+    					"Mild",
+    					"Moderate",
+    					"Severe",
+    					"Very Severe",
+    					"Worst Pain Possible",
+    				],
+    		  },
+              series: svalues,
+    	}
+
+    	zingchart.render({
+    	  id: 'symptoms_chart',
+    	  data: symptomChartData,
+      });
+  }
+  function buildMChart{
+      var medtracker = {
+          "type": 'line',
+    	  "title": {
+    		  "text": "Medications Log",
+    		  "font-size": "24px",
+    		  "adjust-layout": true
+    		},
+          "backgroundColor": '#fff',
+    	  "legend": {
+    		"layout": "float",
+    		"background-color": "none",
+    		"border-width": 0,
+    		"shadow": 0,
+    		"align": "center",
+    		"adjust-layout": true,
+    		"toggle-action": "remove",
+    		"item": {
+    		  "padding": 7,
+    		  "marginRight": 17,
+    		  "cursor": "hand"
+    		}
+    	  },
+          scaleX: {
+    		  label: {
+      			text: 'Date'
+      		  },
+      		transform: {
+      			type: 'date',
+      			all: '%mm/%d/%y<br>%h:%i:%s'
+      		  }
+          },
+    	  scaleY: {
+            label: {
+              text: 'Number of Occurrences'
+            },
+          },
+    	  series: medvalues,
+    }
+    	zingchart.render({
+    	  id: 'medtracker',
+    	  data: medtracker,
+      });
+}
+</script>
+{% endblock %}
