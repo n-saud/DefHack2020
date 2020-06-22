@@ -14,6 +14,10 @@ from.models import *
 from .forms import *
 from .decorators import *
 
+import json
+import requests
+
+
 @unauthenticated_user
 def register(request):
     form = CreateUserForm()
@@ -55,9 +59,23 @@ def profilePage(request):
 
 @login_required(login_url='login')
 def initiateDatabase(request):
-    line = ['Acetaminophen', 'Adenosine', 'Advil', 'Allopurinol', 'Alprazolam', 'Amlodipine', 'Amoxicillin', 'Aspirin', 'Atenolol', 'Azithromycin', 'Bupropion', 'Carvedilol', 'Citalopram', 'Clopidogrel', 'Cyclobenzaprine', 'Duloxetine', 'Escitalopram', 'Fenofibrate', 'Fluoxetine', 'Fluticasone', 'Furosemide', 'Gabapentin', 'Hydrochlorothiazide', 'Hydroxyzine', 'Levothyroxine', 'Liothryonine', 'Lipitor', 'Lisinopril', 'Losartan', 'Meloxicam', 'Metformin', 'Metoprolol', 'Montelukast', 'Naloxone', 'NasonexOmeprazole', 'Pantoprazole', 'Pravastatin', 'Prednisone', 'Sertraline', 'Simvastatin', 'Tamsulosin', 'Tramadol', 'Trazodone', 'Tylenol', 'Venlafaxine', 'Ventolin', 'Vicodin', 'Warfarin', 'Zolpidee']
+    line = ['Acetaminophen', 'Adenosine', 'Advil', 'Allopurinol', 'Alprazolam', 'Amlodipine', 'Amoxicillin', 'Aspirin', 'Atenolol', 'Azithromycin', 'Bupropion', 'Carvedilol', 'Citalopram', 'Clopidogrel', 'Cyclobenzaprine', 'Duloxetine', 'Escitalopram', 'Fenofibrate', 'Fluoxetine', 'Fluticasone', 'Furosemide', 'Gabapentin', 'Hydrochlorothiazide', 'Hydroxyzine', 'Levothyroxine', 'Lipitor', 'Lisinopril', 'Losartan', 'Meloxicam', 'Metformin', 'Metoprolol', 'Montelukast', 'Naloxone', 'Nasonex', 'Omeprazole', 'Pantoprazole', 'Pravastatin', 'Prednisone', 'Sertraline', 'Simvastatin', 'Tamsulosin', 'Tramadol', 'Trazodone', 'Tylenol', 'Venlafaxine', 'Ventolin', 'Vicodin', 'Warfarin']
+    line2 = ['Ache', 'Acne', 'Allergic reaction', 'Amnesia', 'Blindness', 'Bloating', 'Blurry Vision', 'Bruse', 'Chest pain', 'Chills', 'Constipation', 'Cough', 'Depression', 'Diarrhea', 'Dizziness', 'Drowsiness', 'Dry mouth', 'Dry skin', 'Edema', 'Fatigue', 'Fever', 'Hallucination', 'Headache', 'Hearing loss', 'Heartburn', 'Hiccups', 'Hives', 'Insomnia', 'Loss of Appetite', 'Nausea', 'Nervousness', 'Nose bleed', 'Numbness', 'Pneumonia', 'Rash', 'Redness', 'Seizures', 'Shock', 'Slurred speech', 'Stomach pain', 'Stress', 'Stroke', 'Swelling', 'Thirst', 'Tinnitus', 'Tremor', 'Ulcer', 'Vomiting', 'Weight gain', 'Weight loss']
+    l = []
     for i in range(len(line)):
         Med = Medication(name=line[i])
+        information = requests.get("https://api.fda.gov/drug/label.json?search=" + line[i])
+        info = json.loads(information.content)
+        if info["results"][0].get("stop_use"):
+            for pmatch in line2:
+                if pmatch.strip().lower() in info["results"][0].get("stop_use")[0].lower():
+                    l.append(pmatch)
+        else:
+            for pmatch in line2:
+                if pmatch.strip().lower() in info["results"][0]["adverse_reactions"][0].lower():
+                    l.append(pmatch)
+        Med.name=line[i]
+        Med.side_effect_list = str(l)
         Med.save()
     line2 = ['Ache', 'Acne', 'Allergic reaction', 'Amnesia', 'Blindness', 'Bloating', 'Blurry Vision', 'Bruse', 'Chest pain', 'Chills', 'Constipation', 'Cough', 'Depression', 'Diarrhea', 'Dizziness', 'Drowsiness', 'Dry mouth', 'Dry skin', 'Edema', 'Fatigue', 'Fever', 'Hallucination', 'Headache', 'Hearing loss', 'Heartburn', 'Hiccups', 'Hives', 'Insomnia', 'Loss of Appetite', 'Nausea', 'Nervousness', 'Nose bleed', 'Numbness', 'Pneumonia', 'Rash', 'Redness', 'Seizures', 'Shock', 'Slurred speech', 'Stomach pain', 'Stress', 'Stroke', 'Swelling', 'Thirst', 'Tinnitus', 'Tremor', 'Ulcer', 'Vomiting', 'Weight gain', 'Weight loss']
     for i in range(len(line)):
