@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 class SideEffect(models.Model):
     name = models.CharField(max_length=200, null=True)
@@ -31,7 +32,7 @@ class Customer(models.Model):
     name = models.CharField(max_length=200, null=True)
     phone = models.CharField(max_length=200, null=True)
     email = models.CharField(max_length=200, null=True)
-    date_created = models.DateTimeField(auto_now_add=True, null=True)
+    date_created = models.DateTimeField(default=timezone.now(), blank=True, null=True)
     medications = models.ManyToManyField(CustomerMedication, blank=True)
     #json format string list
     my_side_effects_list = models.ManyToManyField(SideEffect, blank=True)
@@ -48,7 +49,7 @@ class SymptomLog(models.Model):
     )
     customer = models.ForeignKey(Customer, null = True, on_delete=models.SET_NULL)
     side_effect = models.ForeignKey(SideEffect, null = True, on_delete=models.SET_NULL)
-    date_created = models.DateTimeField(auto_now_add=True, null=True)
+    date_created = models.DateTimeField(default=timezone.now(),blank=True, null=True)
     severity = models.CharField(max_length=200, choices = SEVERITY)
     duration_in_hours = models.FloatField(null=True)
     def __str__(self):
@@ -57,7 +58,7 @@ class SymptomLog(models.Model):
 class MedLog(models.Model):
     customer = models.ForeignKey(Customer, null = True, on_delete=models.SET_NULL)
     medication = models.ForeignKey(Medication, null = True, on_delete=models.SET_NULL)
-    date_created = models.DateTimeField(auto_now_add=True, null=True)
+    date_created = models.DateTimeField(default=timezone.now(),blank=True, null=True)
     number_of_doses = models.FloatField(null=True)
     def __str__(self):
         name = "MEDLOG | Medication: "+ self.medication.name+ "; Doses: "+ str(self.number_of_doses)+ "; Date: "+ str(self.date_created)
