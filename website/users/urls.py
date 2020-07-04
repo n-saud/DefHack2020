@@ -4,10 +4,13 @@ from . import views
 urlpatterns = [
     path('', views.home, name="home"),
     path('initiate/', views.initiateDatabase, name="initiate"),
+    path('initiate2/', views.initiateLinkSE, name="initiate2"),
     path('register/', views.register, name="register"),
     path('login/', views.loginUser, name="login"),
-    path('getData/', views.getData, name="get_data"),
     path('logout/', views.logoutUser, name="logout"),
+    path('user_settings/', views.userSettings, name="user_settings"),
+
+    path('getData/', views.getData, name="get_data"),
     path('my_heros/', views.friends, name="friends"),
     path('achievements/', views.achievements, name="achievements"),
 
